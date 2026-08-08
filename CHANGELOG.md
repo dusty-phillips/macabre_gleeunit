@@ -1,5 +1,12 @@
 # Changelog
 
+## macabre fork
+
+This repository is a fork of [gleeunit](https://github.com/lpil/gleeunit) that
+adds a Python target for macabre. The upstream changelog below is preserved
+unchanged. The Python FFI lives in `src/gleeunit_ffi.py` and
+`src/gleeunit/internal/gleeunit_gleam_panic_ffi.py`.
+
 ## v1.11.0 - 2026-06-07
 
 - Compared values are always shown in assertion error messages.

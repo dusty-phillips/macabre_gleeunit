@@ -1,6 +1,7 @@
 import gleam/list
 import gleam/result
 import gleam/string
+import gleeunit/internal/reporting
 
 /// Find and run all test functions for the current project using Erlang's EUnit
 /// test framework, or a custom JavaScript test runner.
@@ -15,6 +16,7 @@ pub fn main() -> Nil {
 }
 
 @external(javascript, "./gleeunit_ffi.mjs", "main")
+@external(python, "gleeunit_ffi", "main")
 fn do_main() -> Nil {
   let options = [
     Verbose,

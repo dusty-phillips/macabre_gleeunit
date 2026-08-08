@@ -46,4 +46,5 @@ pub type ExpressionKind {
 
 @external(erlang, "gleeunit_gleam_panic_ffi", "from_dynamic")
 @external(javascript, "./gleeunit_gleam_panic_ffi.mjs", "from_dynamic")
+@external(python, "gleeunit.internal.gleeunit_gleam_panic_ffi", "from_dynamic")
 pub fn from_dynamic(data: dynamic.Dynamic) -> Result(GleamPanic, Nil)

@@ -2,3 +2,4 @@
 *.ez
 build
 .tool-versions
+__pycache__/
