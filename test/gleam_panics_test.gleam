@@ -8,6 +8,7 @@ import testhelper
 
 @external(erlang, "gleeunit_test_ffi", "rescue")
 @external(javascript, "./gleeunit_test_ffi.mjs", "rescue")
+@external(python, "gleeunit_test_ffi", "rescue")
 fn rescue(f: fn() -> t) -> Result(t, dynamic.Dynamic)
 
 pub fn panic_test() {
