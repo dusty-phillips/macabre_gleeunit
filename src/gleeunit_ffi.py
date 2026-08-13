@@ -1,6 +1,7 @@
 import importlib
 import os
 import sys
+import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -33,6 +34,9 @@ def main():
             except (SystemExit, KeyboardInterrupt):
                 raise
             except BaseException as error:
+                print(f"\n--- {module_name}.{function_name} failed ---", file=sys.stderr)
+                traceback.print_exception(type(error), error, error.__traceback__,
+                                          file=sys.stderr)
                 state = reporting.test_failed(state, module_name, function_name, error)
 
     sys.exit(reporting.finished(state))
