@@ -1,4 +1,4 @@
-name = "macabre_gleeunit"
+name = "gleeunit"
 version = "1.11.0"
 licences = ["Apache-2.0"]
 description = "A simple test runner for Gleam (macabre python-target fork of gleeunit)"
