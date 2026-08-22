@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import os
 import sys
 import traceback
@@ -27,6 +28,15 @@ def main():
                 continue
             function = getattr(module, function_name)
             if not callable(function) or function.__module__ != module.__name__:
+                continue
+            try:
+                signature = inspect.signature(function)
+            except (TypeError, ValueError):
+                signature = None
+            if signature is not None and any(
+                param.default is inspect.Parameter.empty
+                for param in signature.parameters.values()
+            ):
                 continue
             try:
                 function()
