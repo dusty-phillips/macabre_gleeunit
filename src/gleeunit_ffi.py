@@ -21,7 +21,7 @@ def main():
     from gleeunit.internal import reporting
     state = reporting.new_state()
 
-    for module_name in gleam_test_modules("test"):
+    for module_name in gleam_test_modules():
         module = importlib.import_module(module_name)
         for function_name in dir(module):
             if not function_name.endswith("_test"):
@@ -52,13 +52,22 @@ def main():
     sys.exit(reporting.finished(state))
 
 
-def gleam_test_modules(directory: str):
+def gleam_test_modules():
+    # Discover compiled test modules next to this file (the build output
+    # directory), not the project's test/ sources: modules skipped by the
+    # compiler (no python implementation) have no .py output and must not be
+    # imported. Only files ending in _test.py are entry candidates; helpers
+    # (e.g. typecheck/helpers.py) are excluded by that suffix.
+    root = os.path.dirname(os.path.abspath(__file__))
     modules = []
-    for root, _, files in os.walk(directory):
+    for dirpath, dirnames, files in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
         for name in files:
-            if not name.endswith(".gleam"):
+            if not name.endswith("_test.py"):
                 continue
-            path = os.path.join(root, name)
-            relative = os.path.relpath(path, directory)
-            modules.append(relative[: -len(".gleam")].replace(os.sep, "."))
+            path = os.path.join(dirpath, name)
+            relative = os.path.relpath(path, root)
+            module = relative[: -len(".py")].replace(os.sep, ".")
+            if module not in modules:
+                modules.append(module)
     return sorted(modules)
