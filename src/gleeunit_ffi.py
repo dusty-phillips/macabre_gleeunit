@@ -22,7 +22,12 @@ def main():
     state = reporting.new_state()
 
     for module_name in gleam_test_modules():
-        module = importlib.import_module(module_name)
+        try:
+            module = importlib.import_module(module_name)
+        except ImportError:
+            # A module whose dependencies were skipped by the compiler (no
+            # python implementation) cannot be imported; skip its tests.
+            continue
         for function_name in dir(module):
             if not function_name.endswith("_test"):
                 continue
@@ -53,21 +58,24 @@ def main():
 
 
 def gleam_test_modules():
-    # Discover compiled test modules next to this file (the build output
-    # directory), not the project's test/ sources: modules skipped by the
-    # compiler (no python implementation) have no .py output and must not be
-    # imported. Only files ending in _test.py are entry candidates; helpers
-    # (e.g. typecheck/helpers.py) are excluded by that suffix.
+    # Mirror the erlang runner's discovery: every module under the test
+    # directory is scanned for *_test functions, regardless of file name.
+    # The compiled equivalents are all .py files next to this one (the build
+    # output directory); runtime helpers and the prelude are excluded, and a
+    # module whose dependencies were skipped simply fails to import (handled
+    # by the caller).
     root = os.path.dirname(os.path.abspath(__file__))
     modules = []
     for dirpath, dirnames, files in os.walk(root):
         dirnames[:] = [d for d in dirnames if d != "__pycache__"]
         for name in files:
-            if not name.endswith("_test.py"):
+            if not name.endswith(".py") or name == "__init__.py":
                 continue
             path = os.path.join(dirpath, name)
             relative = os.path.relpath(path, root)
             module = relative[: -len(".py")].replace(os.sep, ".")
+            if module == "gleam_builtins" or module.startswith("gleeunit"):
+                continue
             if module not in modules:
                 modules.append(module)
     return sorted(modules)
